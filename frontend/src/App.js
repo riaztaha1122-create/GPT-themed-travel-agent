@@ -88,7 +88,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "https://gpt-themed-travel-agent.vercel.app/chat",
+        "http://localhost:5000/chat",
         { message: userMessage }
       );
 
@@ -127,12 +127,24 @@ function App() {
         <div className="chat-box">
 
           {chat.map((msg, index) => {
-            // Render bot messages with line breaks and basic markdown
             if (msg.sender === "bot") {
-
+              // ChatGPT-style markdown rendering
+              // Use a simple markdown parser for bold, italics, code, and code blocks
               let formatted = msg.text
-                .replace(/\n/g, "<br />")
-                .replace(/([^<br />]+:)(<br \/>|$)/g, "<strong>$1</strong><br />");
+                // Code blocks (```...```)
+                .replace(/```([\s\S]*?)```/g, (match, p1) => `<pre class='gpt-code-block'><code>${p1.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`)
+                // Inline code (`...`)
+                .replace(/`([^`]+)`/g, (match, p1) => `<code class='gpt-inline-code'>${p1.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>`)
+                // Bold (**...** or __...__)
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+                // Italic (*...* or _..._)
+                .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                .replace(/_([^_]+)_/g, '<em>$1</em>')
+                // Headings (lines ending with ':')
+                .replace(/(^|\n)([^\n]+:)(?!\n)/g, '$1<strong>$2</strong>')
+                // Line breaks
+                .replace(/\n/g, '<br />');
 
               return (
                 <div
@@ -141,9 +153,7 @@ function App() {
                   dangerouslySetInnerHTML={{ __html: formatted }}
                 />
               );
-
             } else {
-
               return (
                 <div
                   key={index}
@@ -152,7 +162,6 @@ function App() {
                   {msg.text}
                 </div>
               );
-
             }
           })}
 
