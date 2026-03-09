@@ -58,14 +58,12 @@ app.post("/chat", async (req, res) => {
 
     let reply = completion.choices[0].message.content || "";
 
+
     // Remove 'undefined' and trim
     reply = reply.replace(/undefined/g, "").trim();
 
     // Normalize line breaks and spacing
     reply = reply.replace(/\r\n|\r/g, "\n"); // Normalize all line breaks to \n
-    // Ensure at least one line break after headings (lines ending with ':')
-    reply = reply.replace(/(^|\n)([^\n]+:)(?!\n)/g, '$1$2\n');
-
     // Remove excessive blank lines (more than 2)
     reply = reply.replace(/\n{3,}/g, '\n\n');
 
