@@ -88,7 +88,7 @@ function App() {
     try {
 
       const response = await axios.post(
-        "https://gpt-themed-travel-agent-14qq.vercel.app/",
+        "https://gpt-themed-travel-agent.vercel.app/",
         { message: userMessage }
       );
 
